@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Scheduler</title>
+</head>
+<body>
+    <h2>Schedule an Event</h2>
+    <form id="eventForm">
+        <label>Start Time: <input type="number" id="start_time" min="0" max="23" required></label>
+        <label>End Time: <input type="number" id="end_time" min="1" max="24" required></label>
+        <button type="submit">Add Event</button>
+    </form>
+    <div id="message"></div>
+    <h3>Scheduled Events</h3>
+    <ul id="eventList"></ul>
+
+    <script>
+        async function fetchEvents() {
+            const response = await fetch('/api/scheduler/events');
+            const events = await response.json();
+            const eventList = document.getElementById('eventList');
+            eventList.innerHTML = events.map(event => 
+                `<li>Event: ${event.startTime}:00 - ${event.endTime}:00</li>`).join('');
+        }
+
+        document.getElementById('eventForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const startTime = parseInt(document.getElementById('start_time').value);
+            const endTime = parseInt(document.getElementById('end_time').value);
+            const response = await fetch('/api/scheduler/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ startTime, endTime })
+            });
+            const message = await response.text();
+            document.getElementById('message').textContent = message;
+            fetchEvents();
+        });
+
+        fetchEvents();
+    </script>
+</body>
+</html>
