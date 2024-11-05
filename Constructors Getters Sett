@@ -1,0 +1,10 @@
+@Entity
+public class Event {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private int startTime;
+    private int endTime;
+
+}
